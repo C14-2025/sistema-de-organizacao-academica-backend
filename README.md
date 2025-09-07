@@ -41,7 +41,12 @@ DATABASE_URL=mysql://USER:PASSWORD@localhost:PORT/DATABASE
 npx prisma generate
 ```
 
-### 7. Rodando o servidor
+### 7. Gere o banco de dados no MySQL:
+```
+npx prisma migrate dev
+```
+
+### 8. Rodando o servidor
 
 ```
 npm run dev
