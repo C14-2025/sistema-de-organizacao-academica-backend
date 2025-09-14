@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { PrismaUserRepository } from "../../repositories/prisma/prisma-user-repository.js";
-import { UpdateUserService } from "../../../src/services/update.service.js";
+import { UpdateUserService } from "../../services/user/update.service.js";
 
 export async function update(req, res) {
   const schema = z.object({

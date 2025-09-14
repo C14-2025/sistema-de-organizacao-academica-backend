@@ -1,5 +1,5 @@
 import { PrismaUserRepository } from "../../repositories/prisma/prisma-user-repository.js";
-import { FindByIdService } from "../../../src/services/find-by-id.service.js";
+import { FindByIdService } from "../../services/user/find-by-id.service.js";
 
 export async function findById(req, res) {
   const userId = req._private.jwt.userId;

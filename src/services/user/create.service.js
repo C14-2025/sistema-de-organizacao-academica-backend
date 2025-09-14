@@ -1,4 +1,4 @@
-import { hashPassword } from "../controller/middleware/bcrypt-hasher.js";
+import { hashPassword } from "../../controller/middleware/bcrypt-hasher.js";
 
 export class CreateUserService {
   constructor(userRepository) {

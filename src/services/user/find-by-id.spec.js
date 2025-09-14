@@ -1,6 +1,6 @@
 import { expect, describe, it, beforeEach } from "vitest";
 import { FindByIdService } from "./find-by-id.service.js";
-import { InMemoryUserRepository } from "../repositories/in-memory/in-memory-user-repository.js";
+import { InMemoryUserRepository } from "../../repositories/in-memory/in-memory-user-repository.js";
 import { CreateUserService } from "./create.service.js";
 
 let userRepository;

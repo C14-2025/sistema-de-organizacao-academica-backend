@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { PrismaUserRepository } from "../../repositories/prisma/prisma-user-repository.js";
-import { CreateUserService } from "../../services/create.service.js";
+import { CreateUserService } from "../../services/user/create.service.js";
 
 export async function create(req, res) {
   const schema = z.object({
@@ -20,7 +20,6 @@ export async function create(req, res) {
   }
 
   const { name, email, secret, role } = parse.data;
-
 
   try {
     const userRepository = new PrismaUserRepository();
