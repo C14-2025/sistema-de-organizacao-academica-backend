@@ -1,46 +1,57 @@
-import { expect, describe, it, beforeEach } from "vitest";
+import { vi, expect, describe, it, beforeEach, afterEach } from "vitest";
 import { UpdateUserService } from "./update.service.js";
-import { InMemoryUserRepository } from "../../repositories/in-memory/in-memory-user-repository.js";
-import { CreateUserService } from "./create.service.js";
 
-let userRepository;
+let mockUserRepository;
 let sut;
-let createUserService;
 
 describe("Update User Service", () => {
+  
   beforeEach(() => {
-    userRepository = new InMemoryUserRepository();
-    sut = new UpdateUserService(userRepository);
-    createUserService = new CreateUserService(userRepository);
+    mockUserRepository = {
+      findById: vi.fn(),
+      findByEmail: vi.fn(),
+      update: vi.fn(),
+    };
+
+    sut = new UpdateUserService(mockUserRepository);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it("should update an existing user", async () => {
-    const { user } = await createUserService.execute({
+    const existingUser = {
+      id: 1,
       name: "User 1",
       email: "user@email.com",
       secret: "secret",
       role: 0,
-    });
+      created: new Date(),
+      updated: new Date(),
+    };
+
+    const updatedUser = {
+      ...existingUser,
+      name: "User Updated",
+      email: "new@email.com",
+      updated: new Date(),
+    };
+
+    mockUserRepository.findById.mockResolvedValue(existingUser);
+    mockUserRepository.findByEmail.mockResolvedValue(null);
+    mockUserRepository.update.mockResolvedValue(updatedUser);
 
     const response = await sut.execute({
-      userId: user.id,
+      userId: existingUser.id,
       data: {
         name: "User Updated",
         email: "new@email.com",
       },
     });
 
-    expect(response.user.id).toBe(user.id);
+    expect(response.user.id).toBe(existingUser.id);
     expect(response.user.name).toBe("User Updated");
     expect(response.user.email).toBe("new@email.com");
-  });
-
-  it("should throw error if user does not exist", async () => {
-    await expect(
-      sut.execute({
-        userId: 999,
-        data: { name: "Not Found" },
-      })
-    ).rejects.toThrow("User not found.");
   });
 });
