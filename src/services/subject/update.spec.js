@@ -1,40 +1,90 @@
-import { expect, describe, it, beforeEach } from "vitest";
-import { InMemorySubjectRepository } from "../../repositories/in-memory/in-memory-subject-repository.js";
-import { CreateSubjectService } from "./create.service.js";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { UpdateSubjectService } from "./update.service.js";
 
 let repo;
-let createService;
 let sut;
 
-describe("Update Subject Service", () => {
+describe("Update Subject Service (with mocks)", () => {
   beforeEach(() => {
-    repo = new InMemorySubjectRepository();
-    createService = new CreateSubjectService(repo);
+    repo = {
+      findById: vi.fn(),
+      findByCode: vi.fn(),
+      update: vi.fn(),
+    };
     sut = new UpdateSubjectService(repo);
   });
 
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should update an existing subject", async () => {
-    const { subject } = await createService.execute({
+    const existing = {
+      id: 1,
       name: "OS",
       code: "SO1",
       professor: "Prof. B",
       userId: 1,
+      created: new Date("2025-01-01T00:00:00Z"),
+      updated: new Date("2025-01-01T00:00:00Z"),
+    };
+
+    const payload = { name: "Operating Systems", code: " os1 " };
+
+    repo.findById.mockResolvedValue({ subject: existing });
+    repo.findByCode.mockResolvedValue({ subject: null });
+    repo.update.mockResolvedValue({
+      subject: { ...existing, name: "Operating Systems", code: "OS1", updated: new Date() },
     });
 
-    const response = await sut.execute({
-      subjectId: subject.id,
-      data: { name: "Operating Systems", code: "OS1" },
+    const res = await sut.update(existing.id, payload);
+
+    expect(res.subject.id).toBe(existing.id);
+    expect(res.subject.name).toBe("Operating Systems");
+    expect(res.subject.code).toBe("OS1");
+
+    expect(repo.findById).toHaveBeenCalledWith(existing.id);
+    expect(repo.findByCode).toHaveBeenCalledWith("OS1");
+    expect(repo.update).toHaveBeenCalledWith(existing.id, { name: "Operating Systems", code: "OS1" });
+  });
+
+  it("should update when payload has no code (should not call findByCode)", async () => {
+    const existing = { id: 1, name: "OS", code: "SO1", userId: 1 };
+    const payload = { name: "Operating Systems" };
+
+    repo.findById.mockResolvedValue({ subject: existing });
+    repo.update.mockResolvedValue({
+      subject: { ...existing, name: "Operating Systems", updated: new Date() },
     });
 
-    expect(response.subject.id).toBe(subject.id);
-    expect(response.subject.name).toBe("Operating Systems");
-    expect(response.subject.code).toBe("OS1");
+    const res = await sut.update(existing.id, payload);
+
+    expect(res.subject.name).toBe("Operating Systems");
+    expect(repo.findByCode).not.toHaveBeenCalled();
+    expect(repo.update).toHaveBeenCalledWith(existing.id, { name: "Operating Systems" });
   });
 
   it("should throw error if subject does not exist", async () => {
-    await expect(
-      sut.execute({ subjectId: 999, data: { name: "Not Found" } })
-    ).rejects.toThrow("Subject not found.");
+    repo.findById.mockResolvedValue({ subject: null });
+
+    await expect(sut.update(999, { name: "Not Found" }))
+      .rejects.toThrow("Subject not found.");
+
+    expect(repo.update).not.toHaveBeenCalled();
+    expect(repo.findByCode).not.toHaveBeenCalled();
+  });
+
+  it("should reject when code already in use by another subject", async () => {
+    const existing = { id: 1, userId: 1, name: "OS", code: "SO1" };
+    const conflict = { id: 2, userId: 1, name: "DB", code: "OS1" };
+
+    repo.findById.mockResolvedValue({ subject: existing });
+    repo.findByCode.mockResolvedValue({ subject: conflict });
+
+    await expect(sut.update(existing.id, { code: "  os1 " }))
+      .rejects.toThrow("Subject code already in use.");
+
+    expect(repo.update).not.toHaveBeenCalled();
+    expect(repo.findByCode).toHaveBeenCalledWith("OS1");
   });
 });
