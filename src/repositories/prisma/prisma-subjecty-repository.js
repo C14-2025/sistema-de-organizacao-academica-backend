@@ -29,8 +29,8 @@ export class PrismaSubjectRepository {
     return { subjects };
   }
 
-  async findFirst(where) {
-    const subject = await prisma.subject.findFirst({ where });
+  async findByCode(code) {
+    const subject = await prisma.subject.findUnique({ where: { code } });
     return { subject };
   }
 
