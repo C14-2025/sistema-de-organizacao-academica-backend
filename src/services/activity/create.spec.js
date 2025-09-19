@@ -1,27 +1,39 @@
-import { expect, describe, it, beforeEach } from "vitest";
+import { expect, describe, it, beforeEach, vi, afterEach } from "vitest";
 import { CreateActivityService } from "./create.service.js";
-import { InMemoryActivityRepository } from "../../repositories/in-memory/in-memory-activity-repository.js";
 
-let activityRepository;
+let mockActivityRepository;
 let sut;
 
 describe("Create Activity Service", () => {
   beforeEach(() => {
-    activityRepository = new InMemoryActivityRepository();
-    sut = new CreateActivityService(activityRepository);
+    mockActivityRepository = {
+      create: vi.fn(),
+    };
+    sut = new CreateActivityService(mockActivityRepository);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it("should create an activity", async () => {
-    const { activity } = await sut.execute({
+    const activityData = {
       title: "Activity 1",
       description: "Description 1",
       priority: "URGENT",
       status: "PENDING",
       userId: 1,
-    });
+    };
+
+    const createdActivity = { id: 1, ...activityData };
+
+    mockActivityRepository.create.mockResolvedValue(createdActivity);
+
+    const { activity } = await sut.execute(activityData);
 
     expect(activity.id).toBe(1);
     expect(activity.title).toBe("Activity 1");
     expect(activity.priority).toBe("URGENT");
+    expect(mockActivityRepository.create).toHaveBeenCalledWith(activityData);
   });
 });

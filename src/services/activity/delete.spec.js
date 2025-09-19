@@ -1,32 +1,35 @@
-import { expect, describe, it, beforeEach } from "vitest";
+import { expect, describe, it, beforeEach, vi, afterEach } from "vitest";
 import { DeleteActivityService } from "./delete.service.js";
-import { InMemoryActivityRepository } from "../../repositories/in-memory/in-memory-activity-repository.js";
-import { CreateActivityService } from "./create.service.js";
 
-let activityRepository;
+let mockActivityRepository;
 let sut;
-let createActivityService;
 
 describe("Delete Activity Service", () => {
   beforeEach(() => {
-    activityRepository = new InMemoryActivityRepository();
-    sut = new DeleteActivityService(activityRepository);
-    createActivityService = new CreateActivityService(activityRepository);
+    mockActivityRepository = {
+      findById: vi.fn(),
+      delete: vi.fn(),
+    };
+    sut = new DeleteActivityService(mockActivityRepository);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it("should delete an existing activity", async () => {
-    const { activity } = await createActivityService.execute({
-      title: "Activity 1",
-      userId: 1,
-    });
+    const activityId = 1;
+    mockActivityRepository.delete.mockResolvedValue();
 
-    await sut.execute(activity.id);
+    await sut.execute(activityId);
 
-    const deletedActivity = await activityRepository.findById(activity.id);
-    expect(deletedActivity).toBeNull();
+    expect(mockActivityRepository.delete).toHaveBeenCalledWith(activityId);
   });
 
   it("should throw error if activity does not exist", async () => {
-    await expect(sut.execute(999)).rejects.toThrow("Activity not found.");
+    const activityId = 999;
+    mockActivityRepository.delete.mockRejectedValue(new Error("Activity not found."));
+
+    await expect(sut.execute(activityId)).rejects.toThrow("Activity not found.");
   });
 });
