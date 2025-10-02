@@ -13,8 +13,6 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
-        ports:
-          - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 'password'
           MYSQL_DATABASE: 'test_db'
@@ -40,6 +38,13 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+
+    - name: Wait for MySQL
+      run: |
+        until mysqladmin ping -hmysql -uroot -ppassword --silent; do
+          echo "Aguardando MySQL iniciar..."
+          sleep 2
+        done
 
     - name: Apply database migrations
       run: npx prisma migrate deploy
