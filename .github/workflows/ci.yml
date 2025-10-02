@@ -1,0 +1,55 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: 'password'
+          MYSQL_DATABASE: 'test_db'
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -u root -ppassword"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Apply database migrations
+      run: npx prisma migrate deploy
+      env:
+        DATABASE_URL: "mysql://root:password@mysql:3306/test_db"
+
+    - name: Run linter
+      run: npm run lint
+
+    - name: Run tests
+      run: npm test
+      env:
+        DATABASE_URL: "mysql://root:password@mysql:3306/test_db"
