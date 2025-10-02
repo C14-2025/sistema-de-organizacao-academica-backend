@@ -9,7 +9,7 @@ export class UpdateSubjectService {
       throw new Error("Subject not found.");
     }
 
-    if (data && data.code != null) {
+    if (data && data.code !== undefined && data.code !== null) {
       const normalized = typeof data.code === "string" ? data.code.trim().toUpperCase() : String(data.code).trim().toUpperCase();
       data.code = normalized;
 
