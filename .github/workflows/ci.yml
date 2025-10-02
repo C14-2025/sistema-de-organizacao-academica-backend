@@ -9,22 +9,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     services:
       mysql:
         image: mysql:8.0
+        # 1. Mapeia a porta do container para o host. Essencial para a conexão.
+        ports:
+          - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 'password'
           MYSQL_DATABASE: 'test_db'
+        # 2. O health-check usa 127.0.0.1 para verificar a porta mapeada.
         options: >-
-          --health-cmd "mysqladmin ping -h localhost -u root -ppassword"
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -ppassword"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
     - name: Checkout repository
@@ -39,17 +44,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Wait for MySQL
-      run: |
-        until mysqladmin ping -hmysql -uroot -ppassword --silent; do
-          echo "Aguardando MySQL iniciar..."
-          sleep 2
-        done
-
     - name: Apply database migrations
       run: npx prisma migrate deploy
       env:
-        DATABASE_URL: "mysql://root:password@mysql:3306/test_db"
+        # 3. A URL de conexão usa 127.0.0.1, que agora aponta para o container MySQL.
+        DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
 
     - name: Run linter
       run: npm run lint
@@ -57,4 +56,5 @@ jobs:
     - name: Run tests
       run: npm test
       env:
-        DATABASE_URL: "mysql://root:password@mysql:3306/test_db"
+        # 4. A mesma URL é usada para os testes.
+        DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
