@@ -4,9 +4,11 @@ export class UpdateWorkService {
   }
 
   async execute({ workId, data }) {
-  
+
     const existing = await this.workRepository.findById(workId);
-    if (!existing) throw new Error("Work not found.");
+    if (!existing) {
+      throw new Error("Work not found.");
+    }
 
     const patch = { ...data };
     Object.keys(patch).forEach((k) => patch[k] === undefined && delete patch[k]);
@@ -15,7 +17,7 @@ export class UpdateWorkService {
     delete patch.subjectId;
 
     if (typeof patch.title === "string") {
-      patch.title = patch.title.trim(); 
+      patch.title = patch.title.trim();
     }
     if (typeof patch.description === "string") {
       patch.description = patch.description.trim();

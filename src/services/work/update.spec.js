@@ -43,7 +43,6 @@ describe("Update Work Service (mocked)", () => {
     expect(saved.description).toBe("Updated Description");
     expect(saved.id).toBeUndefined();
 
-
     expect(repo.update).toHaveBeenCalledWith(
       existing.id,
       expect.objectContaining({ title: "Updated Title", description: "Updated Description" })
