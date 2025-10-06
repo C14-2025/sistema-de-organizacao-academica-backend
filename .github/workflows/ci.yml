@@ -14,13 +14,11 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
-        # 1. Mapeia a porta do container para o host. Essencial para a conexão.
         ports:
           - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 'password'
           MYSQL_DATABASE: 'test_db'
-        # 2. O health-check usa 127.0.0.1 para verificar a porta mapeada.
         options: >-
           --health-cmd "mysqladmin ping -h 127.0.0.1 -u root -ppassword"
           --health-interval 10s
@@ -32,32 +30,39 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Apply database migrations
-      run: npx prisma migrate deploy
-      env:
-        # 3. A URL de conexão usa 127.0.0.1, que agora aponta para o container MySQL.
-        DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
 
-    - name: Run linter
-      run: npm run lint
+      - name: Run linter
+        run: npm run lint
 
-    - name: Run tests
-      run: npm test
-      env:
-        # 4. A mesma URL é usada para os testes.
-        DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
+      - name: Run tests
+        run: npm test
+        env:
+          DATABASE_URL: "mysql://root:password@127.0.0.1:3306/test_db"
+
+      - name: Build server with tsup
+        run: npm run build:server
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-build
+          path: build
 
   test:
     name: Tests (Vitest + Coverage)
@@ -82,8 +87,8 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run:  npm run test -- --coverage
-      
+        run: npm run test -- --coverage
+
       - name: Upload coverage report
         if: success()
         uses: actions/upload-artifact@v4

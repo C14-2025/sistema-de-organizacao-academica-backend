@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 
-export class PrismaexamRepository {
+export class PrismaExamRepository {
   async create(exam) {
     return await prisma.exam.create({ data: exam });
   }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { PrismaExamRepository } from "../../repositories/prisma/prisma-exam-repository.js";
-import { UpdateExamService } from "../../services/exam/update.service.js";
+import { UpdateExamService } from "../../services/exams/update.service.js";
 
 export async function update(req, res) {
   const schema = z.object({

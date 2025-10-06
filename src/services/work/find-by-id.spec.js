@@ -1,7 +1,7 @@
 import { expect, describe, it, beforeEach } from "vitest";
 import { InMemoryWorkRepository } from "../../repositories/in-memory/in-memory-work-repository.js";
 import { CreateWorkService } from "./create.service.js";
-import { FindByIdService } from "./find-by-id.service.js";
+import { FindWorkByIdService } from "./find-by-id.service.js";
 
 let workRepository;
 let createService;
@@ -11,7 +11,7 @@ describe("Find Work By Id Service", () => {
   beforeEach(() => {
     workRepository = new InMemoryWorkRepository();
     createService = new CreateWorkService(workRepository);
-    sut = new FindByIdService(workRepository);
+    sut = new FindWorkByIdService(workRepository);
   });
 
   it("should return a work by id", async () => {

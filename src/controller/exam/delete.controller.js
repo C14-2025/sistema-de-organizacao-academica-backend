@@ -1,5 +1,5 @@
 import { PrismaExamRepository } from "../../repositories/prisma/prisma-exam-repository.js";
-import { DeleteExamService } from "../../services/exam/delete.service.js";
+import { DeleteExamService } from "../../services/exams/delete.service.js";
 
 export async function remove(req, res) {
   const { examId } = req.params;

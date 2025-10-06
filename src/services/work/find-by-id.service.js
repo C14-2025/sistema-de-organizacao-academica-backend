@@ -1,4 +1,4 @@
-export class FindByIdService {
+export class FindWorkByIdService {
   constructor(workRepository) {
     this.workRepository = workRepository;
   }

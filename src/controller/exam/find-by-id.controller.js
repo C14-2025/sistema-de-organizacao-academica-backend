@@ -1,5 +1,5 @@
 import { PrismaExamRepository } from "../../repositories/prisma/prisma-exam-repository.js";
-import { FindByIdService } from "../../services/exam/find-by-id.service.js";
+import { FindByIdService } from "../../services/exams/find-by-id.service.js";
 
 export async function findById(req, res) {
   const { examId } = req.params;
