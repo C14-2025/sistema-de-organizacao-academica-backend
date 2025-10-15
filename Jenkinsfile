@@ -1,10 +1,7 @@
 pipeline {
   agent any
-
-  options {
-    timestamps()
-  }
-
+  options { timestamps() }
+  tools { nodejs 'Node 20' }   
   environment { CI = 'true' }
 
   stages {
@@ -22,9 +19,9 @@ pipeline {
       steps {
         script {
           if (fileExists('package-lock.json')) {
-            isUnix() ? sh('npm ci') : bat('npm ci')
+            isUnix() ? sh('npm ci --no-audit --no-fund') : bat('npm ci --no-audit --no-fund')
           } else {
-            isUnix() ? sh('npm install') : bat('npm install')
+            isUnix() ? sh('npm install --no-audit --no-fund') : bat('npm install --no-audit --no-fund')
           }
         }
       }
@@ -34,39 +31,37 @@ pipeline {
       when { expression { fileExists('prisma/schema.prisma') } }
       steps {
         script {
-          isUnix() ? sh('npx prisma generate') : bat('npx prisma generate')
+          isUnix() ? sh('npx prisma -v && npx prisma generate')
+                   : bat('npx prisma -v && npx prisma generate')
         }
       }
     }
 
     stage('Lint (if present)') {
-      steps {
-        script {
-          isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present')
-        }
-      }
+      steps { script { isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present') } }
     }
 
     stage('Format check (if present)') {
-      steps {
-        script {
-          isUnix() ? sh('npm run format:check --if-present') : bat('npm run format:check --if-present')
-        }
-      }
+      steps { script { isUnix() ? sh('npm run format:check --if-present') : bat('npm run format:check --if-present') } }
     }
 
     stage('Build (tsup)') {
       steps {
         script {
-          isUnix() ? sh('npm run build --if-present') : bat('npm run build --if-present')
+          isUnix()
+            ? sh('echo "PWD: $(pwd)"; ls -la; npm run build --if-present')
+            : bat('echo PWD: %cd% && dir && npm run build --if-present')
         }
       }
     }
 
     stage('Archive artifact') {
-      when { expression { fileExists('build') } }
+      when { expression { fileExists('build') || fileExists('dist') } }
       steps {
-        archiveArtifacts artifacts: 'build/**', fingerprint: true, onlyIfSuccessful: true
+        script {
+          def path = fileExists('build') ? 'build/**' : 'dist/**'
+          archiveArtifacts artifacts: path, fingerprint: true, onlyIfSuccessful: true
+        }
       }
     }
   }
