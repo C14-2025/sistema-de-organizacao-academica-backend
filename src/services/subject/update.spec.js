@@ -34,7 +34,12 @@ describe("Update Subject Service (with mocks)", () => {
     repo.findById.mockResolvedValue({ subject: existing });
     repo.findByCode.mockResolvedValue({ subject: null });
     repo.update.mockResolvedValue({
-      subject: { ...existing, name: "Operating Systems", code: "OS1", updated: new Date() },
+      subject: {
+        ...existing,
+        name: "Operating Systems",
+        code: "OS1",
+        updated: new Date(),
+      },
     });
 
     const res = await sut.update(existing.id, payload);
@@ -45,7 +50,10 @@ describe("Update Subject Service (with mocks)", () => {
 
     expect(repo.findById).toHaveBeenCalledWith(existing.id);
     expect(repo.findByCode).toHaveBeenCalledWith("OS1");
-    expect(repo.update).toHaveBeenCalledWith(existing.id, { name: "Operating Systems", code: "OS1" });
+    expect(repo.update).toHaveBeenCalledWith(existing.id, {
+      name: "Operating Systems",
+      code: "OS1",
+    });
   });
 
   it("should update when payload has no code (should not call findByCode)", async () => {
@@ -61,14 +69,17 @@ describe("Update Subject Service (with mocks)", () => {
 
     expect(res.subject.name).toBe("Operating Systems");
     expect(repo.findByCode).not.toHaveBeenCalled();
-    expect(repo.update).toHaveBeenCalledWith(existing.id, { name: "Operating Systems" });
+    expect(repo.update).toHaveBeenCalledWith(existing.id, {
+      name: "Operating Systems",
+    });
   });
 
   it("should throw error if subject does not exist", async () => {
     repo.findById.mockResolvedValue({ subject: null });
 
-    await expect(sut.update(999, { name: "Not Found" }))
-      .rejects.toThrow("Subject not found.");
+    await expect(sut.update(999, { name: "Not Found" })).rejects.toThrow(
+      "Subject not found.",
+    );
 
     expect(repo.update).not.toHaveBeenCalled();
     expect(repo.findByCode).not.toHaveBeenCalled();
@@ -81,8 +92,9 @@ describe("Update Subject Service (with mocks)", () => {
     repo.findById.mockResolvedValue({ subject: existing });
     repo.findByCode.mockResolvedValue({ subject: conflict });
 
-    await expect(sut.update(existing.id, { code: "  os1 " }))
-      .rejects.toThrow("Subject code already in use.");
+    await expect(sut.update(existing.id, { code: "  os1 " })).rejects.toThrow(
+      "Subject code already in use.",
+    );
 
     expect(repo.update).not.toHaveBeenCalled();
     expect(repo.findByCode).toHaveBeenCalledWith("OS1");

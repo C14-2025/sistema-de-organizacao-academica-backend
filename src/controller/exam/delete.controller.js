@@ -6,9 +6,7 @@ export async function remove(req, res) {
 
   try {
     const examRepository = new PrismaExamRepository();
-    await new DeleteExamService(examRepository).execute(
-      parseInt(examId)
-    );
+    await new DeleteExamService(examRepository).execute(parseInt(examId));
 
     return res.status(204).send();
   } catch (err) {

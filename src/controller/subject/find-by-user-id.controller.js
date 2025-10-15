@@ -7,7 +7,7 @@ export async function findByUserId(req, res) {
   try {
     const subjectRepository = new PrismaSubjectRepository();
     const { subjects } = await new FindSubjectsByUserIdService(
-      subjectRepository
+      subjectRepository,
     ).execute(userId);
 
     return res.status(200).json(subjects);

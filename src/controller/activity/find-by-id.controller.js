@@ -7,7 +7,7 @@ export async function findById(req, res) {
   try {
     const activityRepository = new PrismaActivityRepository();
     const { activity } = await new FindByIdService(activityRepository).execute(
-      parseInt(activityId)
+      parseInt(activityId),
     );
 
     if (!activity) {

@@ -6,7 +6,9 @@ export async function remove(req, res) {
 
   try {
     const subjectRepository = new PrismaSubjectRepository();
-    await new DeleteSubjectService(subjectRepository).execute(parseInt(subjectId));
+    await new DeleteSubjectService(subjectRepository).execute(
+      parseInt(subjectId),
+    );
 
     return res.status(204).send();
   } catch (err) {

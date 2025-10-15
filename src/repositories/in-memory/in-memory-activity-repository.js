@@ -28,7 +28,7 @@ export class InMemoryActivityRepository {
     };
 
     this.activities = this.activities.map((a) =>
-      a.id === activityId ? updatedActivity : a
+      a.id === activityId ? updatedActivity : a,
     );
 
     return updatedActivity;

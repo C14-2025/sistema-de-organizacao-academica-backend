@@ -32,6 +32,8 @@ describe("Delete Subject Service", () => {
   });
 
   it("should throw error if subject does not exist", async () => {
-    await expect(deleteService.execute(999)).rejects.toThrow("Subject not found.");
+    await expect(deleteService.execute(999)).rejects.toThrow(
+      "Subject not found.",
+    );
   });
 });

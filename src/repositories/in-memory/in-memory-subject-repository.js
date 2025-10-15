@@ -25,7 +25,9 @@ export class InMemorySubjectRepository {
       updatedAt: new Date(),
     };
 
-    this.subjects = this.subjects.map((s) => (s.id === subjectId ? updated : s));
+    this.subjects = this.subjects.map((s) =>
+      s.id === subjectId ? updated : s,
+    );
     return updated;
   }
 

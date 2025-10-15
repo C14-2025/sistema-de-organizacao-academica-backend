@@ -7,7 +7,7 @@ export async function findByUserId(req, res) {
   try {
     const workRepository = new PrismaWorkRepository();
     const { works } = await new FindWorksByUserIdService(
-      workRepository
+      workRepository,
     ).execute(userId);
 
     return res.status(200).json(works);

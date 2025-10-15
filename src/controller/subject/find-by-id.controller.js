@@ -6,9 +6,9 @@ export async function findById(req, res) {
 
   try {
     const subjectRepository = new PrismaSubjectRepository();
-    const { subject } = await new FindSubjectByIdService(subjectRepository).execute(
-      parseInt(subjectId)
-    );
+    const { subject } = await new FindSubjectByIdService(
+      subjectRepository,
+    ).execute(parseInt(subjectId));
 
     if (!subject) {
       return res.status(404).json({ message: "Subject not found" });

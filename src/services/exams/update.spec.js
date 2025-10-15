@@ -43,7 +43,10 @@ describe("Update Exam Service", () => {
     expect(response.exam.id).toBe(existingExam.id);
     expect(response.exam.title).toBe("Exam Updated");
     expect(response.exam.status).toBe("COMPLETED");
-    expect(mockExamRepository.update).toHaveBeenCalledWith(existingExam.id, updatedExamData);
+    expect(mockExamRepository.update).toHaveBeenCalledWith(
+      existingExam.id,
+      updatedExamData,
+    );
   });
 
   it("should throw error if exam does not exist", async () => {
@@ -53,7 +56,7 @@ describe("Update Exam Service", () => {
       sut.execute({
         examId: 999,
         data: { title: "Not Found" },
-      })
+      }),
     ).rejects.toThrow("Exam not found.");
   });
 });

@@ -1,5 +1,4 @@
 export class InMemoryUserRepository {
-
   users = [];
 
   async create(user) {
@@ -33,7 +32,7 @@ export class InMemoryUserRepository {
     return updatedUser;
   }
 
-  async delete(userId){
+  async delete(userId) {
     const index = this.users.findIndex((u) => u.id === userId);
     if (index === -1) {
       throw new Error("User not found.");
@@ -51,10 +50,9 @@ export class InMemoryUserRepository {
     return user || null;
   }
 
-  findByName(name){
+  findByName(name) {
     const user = this.users.find((d) => d.name === name);
 
     return Promise.resolve(user || null);
   }
-
 }

@@ -7,7 +7,7 @@ export async function findById(req, res) {
   try {
     const workRepository = new PrismaWorkRepository();
     const { work } = await new FindWorkByIdService(workRepository).execute(
-      parseInt(workId)
+      parseInt(workId),
     );
 
     if (!work) {

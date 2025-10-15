@@ -42,6 +42,7 @@ npx prisma generate
 ```
 
 ### 7. Gere o banco de dados no MySQL:
+
 ```
 npx prisma migrate dev
 ```

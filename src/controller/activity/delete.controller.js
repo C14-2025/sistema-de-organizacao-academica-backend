@@ -7,7 +7,7 @@ export async function remove(req, res) {
   try {
     const activityRepository = new PrismaActivityRepository();
     await new DeleteActivityService(activityRepository).execute(
-      parseInt(activityId)
+      parseInt(activityId),
     );
 
     return res.status(204).send();

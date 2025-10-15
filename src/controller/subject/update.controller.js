@@ -22,7 +22,9 @@ export async function update(req, res) {
 
   try {
     const subjectRepository = new PrismaSubjectRepository();
-    const { subject } = await new UpdateSubjectService(subjectRepository).execute({
+    const { subject } = await new UpdateSubjectService(
+      subjectRepository,
+    ).execute({
       subjectId: parseInt(subjectId),
       data: parse.data,
     });

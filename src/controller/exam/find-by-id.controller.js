@@ -7,7 +7,7 @@ export async function findById(req, res) {
   try {
     const examRepository = new PrismaExamRepository();
     const { exam } = await new FindByIdService(examRepository).execute(
-      parseInt(examId)
+      parseInt(examId),
     );
 
     if (!exam) {

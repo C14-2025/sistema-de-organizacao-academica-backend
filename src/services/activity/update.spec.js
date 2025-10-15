@@ -43,17 +43,22 @@ describe("Update Activity Service", () => {
     expect(response.activity.id).toBe(existingActivity.id);
     expect(response.activity.title).toBe("Activity Updated");
     expect(response.activity.status).toBe("COMPLETED");
-    expect(mockActivityRepository.update).toHaveBeenCalledWith(existingActivity.id, updatedActivityData);
+    expect(mockActivityRepository.update).toHaveBeenCalledWith(
+      existingActivity.id,
+      updatedActivityData,
+    );
   });
 
   it("should throw error if activity does not exist", async () => {
-    mockActivityRepository.update.mockRejectedValue(new Error("Activity not found."));
+    mockActivityRepository.update.mockRejectedValue(
+      new Error("Activity not found."),
+    );
 
     await expect(
       sut.execute({
         activityId: 999,
         data: { title: "Not Found" },
-      })
+      }),
     ).rejects.toThrow("Activity not found.");
   });
 });

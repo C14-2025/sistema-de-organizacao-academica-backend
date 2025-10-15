@@ -24,9 +24,7 @@ export async function update(req, res) {
 
   try {
     const examRepository = new PrismaExamRepository();
-    const { exam } = await new UpdateExamService(
-      examRepository
-    ).execute({
+    const { exam } = await new UpdateExamService(examRepository).execute({
       examId: parseInt(examId),
       data: parse.data,
     });

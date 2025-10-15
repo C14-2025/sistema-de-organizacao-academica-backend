@@ -6,9 +6,9 @@ export async function findByUserId(req, res) {
 
   try {
     const examRepository = new PrismaExamRepository();
-    const { exams } = await new FindByUserIdService(
-      examRepository
-    ).execute(userId);
+    const { exams } = await new FindByUserIdService(examRepository).execute(
+      userId,
+    );
 
     return res.status(200).json(exams);
   } catch (err) {
