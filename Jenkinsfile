@@ -40,22 +40,33 @@ pipeline {
     stage('Lint (if present)') {
       steps { script { isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present') } }
     }
-
-    stage('Format check (if present)') {
-  steps {
-    script {
-      def cmd = 'npm run format:check --if-present'
-      def status = isUnix()
-        ? sh(script: cmd, returnStatus: true)
-        : bat(script: cmd, returnStatus: true)
-
-      if (status != 0) {
-        echo "⚠️ Prettier encontrou arquivos fora do padrão (status=${status}). Continuando o pipeline..."
-        currentBuild.result = 'UNSTABLE' 
+    stage('Test') {
+      environment {
+        DATABASE_URL = "mysql://root:password@127.0.0.1:3306/test_db"
+      }
+      steps {
+        script {
+          isUnix() ?
+            sh('npm test') : bat('npm test')
+        }
       }
     }
-  }
-}
+
+    stage('Format check (if present)') {
+      steps {
+        script {
+          def cmd = 'npm run format:check --if-present'
+          def status = isUnix()
+            ? sh(script: cmd, returnStatus: true)
+            : bat(script: cmd, returnStatus: true)
+    
+          if (status != 0) {
+            echo "⚠️ Prettier encontrou arquivos fora do padrão (status=${status}). Continuando o pipeline..."
+            currentBuild.result = 'UNSTABLE' 
+          }
+        }
+      }
+    }
 
     stage('Build (tsup)') {
       steps {
