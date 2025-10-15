@@ -1,23 +1,14 @@
 pipeline {
   agent any
 
-  tools {
-    nodejs 'Node 20.16.0'
-  }
-
   options {
     timestamps()
-    ansiColor('xterm')
   }
 
-  environment {
-    CI = 'true'
-  }
+  environment { CI = 'true' }
 
   stages {
-    stage('Checkout') {
-      steps { checkout scm }
-    }
+    stage('Checkout') { steps { checkout scm } }
 
     stage('Node & NPM info') {
       steps {
