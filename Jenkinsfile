@@ -38,17 +38,60 @@ pipeline {
     }
 
     stage('Lint (if present)') {
-      steps { script { isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present') } }
-    }
-    stage('Test') {
-      environment {
-        DATABASE_URL = "mysql://root:password@127.0.0.1:3306/test_db"
+      steps { 
+        script { 
+          isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present') 
+          } 
+        }
       }
+
+
+    stage('Test (CI)') {
       steps {
         script {
-          isUnix() ?
-            sh('npm test') : bat('npm test')
+          if(isUnix()) {
+            sh('mkdir -p reports/junit')
+            sh('npm run test:ci --if-present')
+          } else {
+            bat('if not exist reports\\junit mkdir reports\\junit')
+            bat('npm run test:ci --if-present')
+          }
         }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'reports/junit/**/*.xml, coverage/**/*', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Publish test report') {
+      when { expression { fileExists('reports/junit/junit.xml') } }
+      steps {
+        junit testResults: 'reports/junit/*.xml', allowEmptyResults: true, healthScaleFactor: 1.0
+      }
+    }
+
+    stage('Publish coverage') {
+      when { expression { fileExists('coverage/cobertura-coverage.xml') } }
+      steps {
+        recordCoverage(
+          tools: [[parser: 'COBERTURA', pattern: 'coverage/cobertura-coverage.xml']]
+        )
+      }
+    }
+
+    stage('Publish HTML Coverage Report') {
+      when { expression { fileExists('coverage/index.html') } }
+      steps {
+          publishHTML([
+          reportDir: 'coverage',
+          reportFiles: 'index.html',
+          reportName: 'Test Coverage Report',
+          keepAll: true,
+          allowMissing: true,
+          alwaysLinkToLastBuild: true
+        ])
       }
     }
 
