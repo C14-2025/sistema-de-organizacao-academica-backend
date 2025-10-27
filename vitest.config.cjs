@@ -1,33 +1,35 @@
-module.exports = {
-  test: {
+const path = require('path');
+const { defineConfig } = require('vitest/config');
 
-    include: ['src/services/**/*.{spec,test}.{js,ts}'],
+module.exports = defineConfig({
+  test: {
+    include: ['**/*.spec.js'],
     watch: false,
     coverage: {
       provider: 'v8',
-      reportsDirectory: 'coverage',
-      reporter: ['text', 'lcov', 'cobertura', 'html'],
+      reportsDirectory: path.resolve(__dirname, 'coverage'),
+      reporter: ['text', 'html', 'lcov', 'cobertura'],
 
-    
-      all: false,
-      include: ['src/services/**/*.{js,ts}'],
+      include: [
+        'src/services/**/*.service.js',
+        'src/repositories/in-memory/**/*.js',
+      ],
+      all: true,
 
-      
       exclude: [
-        '**/*.d.ts',
-        'node_modules/**',
-        'src/**/*.spec.{js,ts}',
-        'src/**/*.test.{js,ts}',
+        '**/*.spec.*',
+        '**/*.test.*',
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/*.config.*',
+        'vitest.config.cjs',
+        'eslint.config.cjs',
+        'src/index.js',
         'src/controller/**',
-        'src/controllers/**',
-        'src/repositories/**',
-        'src/repository/**',
-        'src/middleware/**',
-        'src/prisma/**',
         'src/env/**',
         'src/lib/**',
-        'src/**/__mocks__/**'
-      ]
-    }
-  }
-};
+        'src/repositories/prisma/**', 
+      ],
+    },
+  },
+});
