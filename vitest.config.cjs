@@ -11,9 +11,7 @@ module.exports = defineConfig({
       reporter: ['text', 'html', 'lcov', 'cobertura'],
 
       include: [
-        'src/services/**/*.service.js',
-        'src/repositories/in-memory/**/*.js',
-      ],
+        'src/services/**/*.service.js'],
       all: true,
 
       exclude: [
@@ -28,7 +26,8 @@ module.exports = defineConfig({
         'src/controller/**',
         'src/env/**',
         'src/lib/**',
-        'src/repositories/prisma/**', 
+        'src/repositories/prisma/**',
+        'src/repositories/in-memory/**',
       ],
     },
   },
