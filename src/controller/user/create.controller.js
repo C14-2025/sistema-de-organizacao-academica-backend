@@ -4,30 +4,28 @@ import { CreateUserService } from "../../services/user/create.service.js";
 
 export async function create(req, res) {
   const schema = z.object({
-    name: z.string().max(255),
-    email: z.string(),
+    email: z.email(),
     secret: z.string().max(255),
-    role: z.number().int(),
   });
 
   const parse = schema.safeParse(req.body);
 
   if (!parse.success) {
-    return res.status(400).json({
+    const error = {
       errors: parse.error.flatten().fieldErrors,
       message: "Invalid request body",
-    });
+    };
+    console.error(error);
+    return res.status(400).json(error);
   }
 
-  const { name, email, secret, role } = parse.data;
+  const { email, secret } = parse.data;
 
   try {
     const userRepository = new PrismaUserRepository();
     const { user } = await new CreateUserService(userRepository).execute({
-      name,
       email,
       secret,
-      role,
     });
 
     return res.status(201).json(user);

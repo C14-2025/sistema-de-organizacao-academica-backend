@@ -16,10 +16,8 @@ describe("Find By Id Service", () => {
 
   it("should return a user by id", async () => {
     const { user } = await createUserService.execute({
-      name: "User 1",
       email: "user@email.com",
       secret: "secret",
-      role: 0,
     });
 
     const response = await sut.execute(user.id);

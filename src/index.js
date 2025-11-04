@@ -4,10 +4,12 @@ import { activityRoutes } from "./controller/activity/route.js";
 import { examRoutes } from "./controller/exam/route.js";
 import { subjectRoutes } from "./controller/subject/route.js";
 import { workRoutes } from "./controller/work/route.js";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 
-const PORT = 3000;
+const PORT = 8080;
 
 app.use(express.json());
 

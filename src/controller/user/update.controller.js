@@ -4,10 +4,8 @@ import { UpdateUserService } from "../../services/user/update.service.js";
 
 export async function update(req, res) {
   const schema = z.object({
-    name: z.string().max(255).optional(),
     email: z.string().optional(),
     secret: z.string().max(255).optional(),
-    role: z.number().int().optional(),
   });
 
   const parse = schema.safeParse(req.body);
