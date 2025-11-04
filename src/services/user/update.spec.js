@@ -5,7 +5,6 @@ let mockUserRepository;
 let sut;
 
 describe("Update User Service", () => {
-  
   beforeEach(() => {
     mockUserRepository = {
       findById: vi.fn(),

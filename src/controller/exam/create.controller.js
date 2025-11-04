@@ -25,9 +25,7 @@ export async function create(req, res) {
 
   try {
     const examRepository = new PrismaExamRepository();
-    const { exam } = await new CreateExamService(
-      examRepository
-    ).execute({
+    const { exam } = await new CreateExamService(examRepository).execute({
       title,
       description,
       priority,

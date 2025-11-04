@@ -15,9 +15,24 @@ describe("Find Works By User Id Service", () => {
   });
 
   it("should return all works for a user", async () => {
-    await createService.execute({ title: "Work 1", userId: 1, subjectId: 1, deadline: new Date() });
-    await createService.execute({ title: "Work 2", userId: 1, subjectId: 2, deadline: new Date() });
-    await createService.execute({ title: "Work 3", userId: 2, subjectId: 1, deadline: new Date() });
+    await createService.execute({
+      title: "Work 1",
+      userId: 1,
+      subjectId: 1,
+      deadline: new Date(),
+    });
+    await createService.execute({
+      title: "Work 2",
+      userId: 1,
+      subjectId: 2,
+      deadline: new Date(),
+    });
+    await createService.execute({
+      title: "Work 3",
+      userId: 2,
+      subjectId: 1,
+      deadline: new Date(),
+    });
 
     const { works } = await sut.execute(1);
 

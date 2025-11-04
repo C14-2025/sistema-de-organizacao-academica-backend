@@ -28,8 +28,12 @@ describe("Delete Activity Service", () => {
 
   it("should throw error if activity does not exist", async () => {
     const activityId = 999;
-    mockActivityRepository.delete.mockRejectedValue(new Error("Activity not found."));
+    mockActivityRepository.delete.mockRejectedValue(
+      new Error("Activity not found."),
+    );
 
-    await expect(sut.execute(activityId)).rejects.toThrow("Activity not found.");
+    await expect(sut.execute(activityId)).rejects.toThrow(
+      "Activity not found.",
+    );
   });
 });

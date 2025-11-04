@@ -26,14 +26,22 @@ describe("Update Work Service (mocked)", () => {
 
   it("atualiza quando existir (trim + preserva imutáveis + chama repo corretamente)", async () => {
     const existing = work();
-    const patch = { title: "  Updated Title  ", description: "  Updated Description  " };
+    const patch = {
+      title: "  Updated Title  ",
+      description: "  Updated Description  ",
+    };
 
     repo.findById.mockResolvedValue(existing);
     repo.update.mockImplementation(async (_id, data) => ({
-      ...existing, ...data, updatedAt: new Date(),
+      ...existing,
+      ...data,
+      updatedAt: new Date(),
     }));
 
-    const { work: out } = await sut.execute({ workId: existing.id, data: patch });
+    const { work: out } = await sut.execute({
+      workId: existing.id,
+      data: patch,
+    });
 
     expect(repo.findById).toHaveBeenCalledWith(existing.id);
     expect(repo.update).toHaveBeenCalledTimes(1);
@@ -45,11 +53,18 @@ describe("Update Work Service (mocked)", () => {
 
     expect(repo.update).toHaveBeenCalledWith(
       existing.id,
-      expect.objectContaining({ title: "Updated Title", description: "Updated Description" })
+      expect.objectContaining({
+        title: "Updated Title",
+        description: "Updated Description",
+      }),
     );
     expect(repo.update).toHaveBeenCalledWith(
       existing.id,
-      expect.not.objectContaining({ id: expect.anything(), userId: expect.anything(), subjectId: expect.anything() })
+      expect.not.objectContaining({
+        id: expect.anything(),
+        userId: expect.anything(),
+        subjectId: expect.anything(),
+      }),
     );
 
     expect(out.id).toBe(existing.id);
@@ -59,8 +74,9 @@ describe("Update Work Service (mocked)", () => {
   it("não chama update quando o work não existir", async () => {
     repo.findById.mockResolvedValue(null);
 
-    await expect(sut.execute({ workId: 999, data: { title: "X" } }))
-      .rejects.toThrow("Work not found.");
+    await expect(
+      sut.execute({ workId: 999, data: { title: "X" } }),
+    ).rejects.toThrow("Work not found.");
 
     expect(repo.update).not.toHaveBeenCalled();
   });
@@ -70,13 +86,19 @@ describe("Update Work Service (mocked)", () => {
     const patch = { title: "New Title", description: undefined };
 
     repo.findById.mockResolvedValue(existing);
-    repo.update.mockImplementation(async (_id, data) => ({ ...existing, ...data }));
+    repo.update.mockImplementation(async (_id, data) => ({
+      ...existing,
+      ...data,
+    }));
 
-    const { work: out } = await sut.execute({ workId: existing.id, data: patch });
+    const { work: out } = await sut.execute({
+      workId: existing.id,
+      data: patch,
+    });
 
     const saved = repo.update.mock.calls[0][1];
     expect(saved.title).toBe("New Title");
-    expect(saved).not.toHaveProperty("description"); 
+    expect(saved).not.toHaveProperty("description");
     expect(out.description).toBe("KeepMe");
   });
 
@@ -85,7 +107,10 @@ describe("Update Work Service (mocked)", () => {
     const patch = { id: 999, userId: 77, subjectId: 55, title: "Safe Update" };
 
     repo.findById.mockResolvedValue(existing);
-    repo.update.mockImplementation(async (_id, data) => ({ ...existing, ...data }));
+    repo.update.mockImplementation(async (_id, data) => ({
+      ...existing,
+      ...data,
+    }));
 
     await sut.execute({ workId: existing.id, data: patch });
 
@@ -95,7 +120,11 @@ describe("Update Work Service (mocked)", () => {
 
     expect(repo.update).toHaveBeenCalledWith(
       existing.id,
-      expect.not.objectContaining({ id: expect.anything(), userId: expect.anything(), subjectId: expect.anything() })
+      expect.not.objectContaining({
+        id: expect.anything(),
+        userId: expect.anything(),
+        subjectId: expect.anything(),
+      }),
     );
   });
 
@@ -104,7 +133,8 @@ describe("Update Work Service (mocked)", () => {
     repo.findById.mockResolvedValue(existing);
     repo.update.mockRejectedValue(new Error("db down"));
 
-    await expect(sut.execute({ workId: existing.id, data: { title: "Any" } }))
-      .rejects.toThrow("db down");
+    await expect(
+      sut.execute({ workId: existing.id, data: { title: "Any" } }),
+    ).rejects.toThrow("db down");
   });
 });

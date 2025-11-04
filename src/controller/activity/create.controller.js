@@ -26,7 +26,7 @@ export async function create(req, res) {
   try {
     const activityRepository = new PrismaActivityRepository();
     const { activity } = await new CreateActivityService(
-      activityRepository
+      activityRepository,
     ).execute({
       title,
       description,

@@ -1,42 +1,140 @@
 pipeline {
-    agent any
+  agent any
+  options { timestamps() }
+  tools { nodejs 'Node 20' }   
+  environment { CI = 'true' }
 
-    tools {
-        nodejs 'Node 20.16.0'
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+
+    stage('Node & NPM info') {
+      steps {
+        script {
+          isUnix() ? sh('node -v && npm -v') : bat('node -v && npm -v')
+        }
+      }
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
+    stage('Install deps') {
+      steps {
+        script {
+          if (fileExists('package-lock.json')) {
+            isUnix() ? sh('npm ci --no-audit --no-fund') : bat('npm ci --no-audit --no-fund')
+          } else {
+            isUnix() ? sh('npm install --no-audit --no-fund') : bat('npm install --no-audit --no-fund')
+          }
         }
-
-        stage('Install Dependencies') {
-            steps {
-                bat 'npm install'
-            }
-        }
-
-        stage('Build Project') {
-            steps {
-                bat 'npm run build'
-            }
-        }
-
-        stage('Archive Build') {
-            steps {
-                archiveArtifacts artifacts: 'build/**', fingerprint: true
-            }
-        }
+      }
     }
 
-    post {
-        success {
-            echo '✅ Build finalizado com sucesso e artefato salvo.'
+    stage('Generate Prisma (if present)') {
+      when { expression { fileExists('prisma/schema.prisma') } }
+      steps {
+        script {
+          isUnix() ? sh('npx prisma -v && npx prisma generate')
+                   : bat('npx prisma -v && npx prisma generate')
         }
-        failure {
-            echo '❌ Ocorreu uma falha no build.'
-        }
+      }
     }
+
+    stage('Lint (if present)') {
+      steps { 
+        script { 
+          isUnix() ? sh('npm run lint --if-present') : bat('npm run lint --if-present') 
+          } 
+        }
+      }
+
+
+    stage('Test (CI)') {
+      steps {
+        script {
+          if(isUnix()) {
+            sh('mkdir -p reports/junit')
+            sh('npm run test:ci --if-present')
+          } else {
+            bat('if not exist reports\\junit mkdir reports\\junit')
+            bat('npm run test:ci --if-present')
+          }
+        }
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'reports/junit/**/*.xml, coverage/**/*', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Publish test report') {
+      when { expression { fileExists('reports/junit/junit.xml') } }
+      steps {
+        junit testResults: 'reports/junit/*.xml', allowEmptyResults: true, healthScaleFactor: 1.0
+      }
+    }
+
+    stage('Publish coverage') {
+      when { expression { fileExists('coverage/cobertura-coverage.xml') } }
+      steps {
+        recordCoverage(
+          tools: [[parser: 'COBERTURA', pattern: 'coverage/cobertura-coverage.xml']]
+        )
+      }
+    }
+
+    stage('Publish HTML Coverage Report') {
+      when { expression { fileExists('coverage/index.html') } }
+      steps {
+          publishHTML([
+          reportDir: 'coverage',
+          reportFiles: 'index.html',
+          reportName: 'Test Coverage Report',
+          keepAll: true,
+          allowMissing: true,
+          alwaysLinkToLastBuild: true
+        ])
+      }
+    }
+
+    stage('Format check (if present)') {
+      steps {
+        script {
+          def cmd = 'npm run format:check --if-present'
+          def status = isUnix()
+            ? sh(script: cmd, returnStatus: true)
+            : bat(script: cmd, returnStatus: true)
+    
+          if (status != 0) {
+            echo "⚠️ Prettier encontrou arquivos fora do padrão (status=${status}). Continuando o pipeline..."
+            currentBuild.result = 'UNSTABLE' 
+          }
+        }
+      }
+    }
+
+    stage('Build (tsup)') {
+      steps {
+        script {
+          isUnix()
+            ? sh('echo "PWD: $(pwd)"; ls -la; npm run build --if-present')
+            : bat('echo PWD: %cd% && dir && npm run build --if-present')
+        }
+      }
+    }
+
+    stage('Archive artifact') {
+      when { expression { fileExists('build') || fileExists('dist') } }
+      steps {
+        script {
+          def path = fileExists('build') ? 'build/**' : 'dist/**'
+          archiveArtifacts artifacts: path, fingerprint: true, onlyIfSuccessful: true
+        }
+      }
+    }
+  }
+
+  post {
+    success { echo '✅ Build finalizado com sucesso.' }
+    failure { echo '❌ Falha no build.' }
+    always  { cleanWs(deleteDirs: true) }
+  }
 }

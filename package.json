@@ -8,7 +8,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "build": "tsup src --out-dir build",
-    "test": "vitest run --dir src/services",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ci":  "vitest --config vitest.config.cjs run --coverage --coverage.reporter=cobertura --coverage.reporter=html --coverage.reportsDirectory=coverage --reporter=default --reporter=junit --outputFile=reports/junit/junit.xml",
     "lint": "eslint .",
     "format:check": "prettier --check ."
   },

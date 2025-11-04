@@ -11,7 +11,7 @@ export async function create(req, res) {
   });
 
   const parse = schema.safeParse(req.body);
-  
+
   if (!parse.success) {
     return res.status(400).json({
       errors: parse.error.flatten().fieldErrors,
@@ -24,7 +24,9 @@ export async function create(req, res) {
 
   try {
     const subjectRepository = new PrismaSubjectRepository();
-    const { subject } = await new CreateSubjectService(subjectRepository).execute({
+    const { subject } = await new CreateSubjectService(
+      subjectRepository,
+    ).execute({
       name,
       code,
       professor,

@@ -25,7 +25,7 @@ export async function update(req, res) {
   try {
     const activityRepository = new PrismaActivityRepository();
     const { activity } = await new UpdateActivityService(
-      activityRepository
+      activityRepository,
     ).execute({
       activityId: parseInt(activityId),
       data: parse.data,
