@@ -5,10 +5,7 @@ export class AuthenticateService {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
-  async execute({
-    email,
-    secret,
-  }){
+  async execute({ email, secret }) {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -28,7 +25,7 @@ export class AuthenticateService {
       userRole: user.role,
     };
 
-    const jwt = (await generate(payload));
+    const jwt = await generate(payload);
 
     return {
       user,

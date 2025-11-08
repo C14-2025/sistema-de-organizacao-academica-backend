@@ -5,10 +5,11 @@ export class CreateUserService {
     this.userRepository = userRepository;
   }
 
-  async execute({ email, secret }) {
+  async execute({ name, email, secret }) {
     const hashedSecret = hashPassword(secret);
 
     const user = await this.userRepository.create({
+      name,
       email,
       secret: hashedSecret,
     });

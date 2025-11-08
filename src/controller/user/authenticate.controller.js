@@ -23,10 +23,12 @@ export async function authenticate(req, res) {
 
   try {
     const userRepository = new PrismaUserRepository();
-    const { user, jwt } = await new AuthenticateService(userRepository).execute({
-      email,
-      secret,
-    });
+    const { user, jwt } = await new AuthenticateService(userRepository).execute(
+      {
+        email,
+        secret,
+      },
+    );
 
     res.status(200).send({
       user,

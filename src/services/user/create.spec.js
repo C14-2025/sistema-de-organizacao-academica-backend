@@ -13,6 +13,7 @@ describe("Create User Service", () => {
 
   it("should create a user", async () => {
     const response = await sut.execute({
+      name: "User 1",
       email: "user@email.com",
       secret: "secret",
     });
