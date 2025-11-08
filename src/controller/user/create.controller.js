@@ -4,6 +4,7 @@ import { CreateUserService } from "../../services/user/create.service.js";
 
 export async function create(req, res) {
   const schema = z.object({
+    name: z.string().max(255),
     email: z.email(),
     secret: z.string().max(255),
   });
@@ -19,11 +20,12 @@ export async function create(req, res) {
     return res.status(400).json(error);
   }
 
-  const { email, secret } = parse.data;
+  const { name, email, secret } = parse.data;
 
   try {
     const userRepository = new PrismaUserRepository();
     const { user } = await new CreateUserService(userRepository).execute({
+      name,
       email,
       secret,
     });
