@@ -8,14 +8,14 @@ export async function update(req, res) {
     description: z.string().optional(),
     priority: z.enum(["URGENT", "IMPORTANT", "OPTIONAL"]).optional(),
     status: z.enum(["PENDING", "COMPLETED"]).optional(),
-    deadline: z.string().datetime().optional(),
+    deadline: z.coerce.date().optional(),
   });
 
   const parse = schema.safeParse(req.body);
 
   if (!parse.success) {
     return res.status(400).json({
-      errors: parse.error.flatten().fieldErrors,
+      errors: parse.error.formErrors().fieldErrors,
       message: "Invalid request body",
     });
   }

@@ -13,7 +13,7 @@ export async function create(req, res) {
 
   if (!parse.success) {
     const error = {
-      errors: parse.error.flatten().fieldErrors,
+      errors: parse.error.formErrors().fieldErrors,
       message: "Invalid request body",
     };
     console.error(error);

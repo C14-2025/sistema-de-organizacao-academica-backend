@@ -12,7 +12,7 @@ export async function update(req, res) {
 
   if (!parse.success) {
     return res.status(400).json({
-      errors: parse.error.flatten().fieldErrors,
+      errors: parse.error.formErrors().fieldErrors,
       message: "Invalid request body",
     });
   }

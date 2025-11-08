@@ -12,7 +12,7 @@ export async function authenticate(req, res) {
 
   if (parse.error) {
     const error = {
-      errors: parse.error.flatten().fieldErrors,
+      errors: parse.error.formErrors().fieldErrors,
       message: "Invalid request body",
     };
     console.error(error);
