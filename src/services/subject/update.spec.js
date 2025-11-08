@@ -42,7 +42,7 @@ describe("Update Subject Service (with mocks)", () => {
       },
     });
 
-    const res = await sut.update(existing.id, payload);
+    const res = await sut.execute({ subjectId: existing.id, data: payload });
 
     expect(res.subject.id).toBe(existing.id);
     expect(res.subject.name).toBe("Operating Systems");
@@ -65,7 +65,7 @@ describe("Update Subject Service (with mocks)", () => {
       subject: { ...existing, name: "Operating Systems", updated: new Date() },
     });
 
-    const res = await sut.update(existing.id, payload);
+    const res = await sut.execute({ subjectId: existing.id, data: payload });
 
     expect(res.subject.name).toBe("Operating Systems");
     expect(repo.findByCode).not.toHaveBeenCalled();
@@ -77,9 +77,9 @@ describe("Update Subject Service (with mocks)", () => {
   it("should throw error if subject does not exist", async () => {
     repo.findById.mockResolvedValue({ subject: null });
 
-    await expect(sut.update(999, { name: "Not Found" })).rejects.toThrow(
-      "Subject not found.",
-    );
+    await expect(
+      sut.execute({ subjectId: 999, data: { name: "Not Found" } })
+    ).rejects.toThrow("SUBJECT_NOT_FOUND");
 
     expect(repo.update).not.toHaveBeenCalled();
     expect(repo.findByCode).not.toHaveBeenCalled();
@@ -92,9 +92,9 @@ describe("Update Subject Service (with mocks)", () => {
     repo.findById.mockResolvedValue({ subject: existing });
     repo.findByCode.mockResolvedValue({ subject: conflict });
 
-    await expect(sut.update(existing.id, { code: "  os1 " })).rejects.toThrow(
-      "Subject code already in use.",
-    );
+    await expect(
+      sut.execute({ subjectId: existing.id, data: { code: "  os1 " } })
+    ).rejects.toThrow("SUBJECT_CODE_ALREADY_EXISTS");
 
     expect(repo.update).not.toHaveBeenCalled();
     expect(repo.findByCode).toHaveBeenCalledWith("OS1");
