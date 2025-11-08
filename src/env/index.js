@@ -3,7 +3,7 @@ import "dotenv/config";
 
 const envSchema = z.object({
   DATABASE_URL: z.string(),
-  JWT_KEY: z.string()
+  JWT_KEY: z.string(),
 });
 
 const _env = envSchema.safeParse(process.env);
