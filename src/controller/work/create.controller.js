@@ -6,7 +6,7 @@ export async function create(req, res) {
   const schema = z.object({
     title: z.string().max(255),
     description: z.string().optional(),
-    deadline: z.string().datetime(),
+    deadline: z.coerce.date(),
     requirements: z.string().optional(),
     subjectId: z.number().int(),
   });
@@ -15,7 +15,7 @@ export async function create(req, res) {
 
   if (!parse.success) {
     return res.status(400).json({
-      errors: parse.error.flatten().fieldErrors,
+      errors: parse.error.formErrors().fieldErrors,
       message: "Invalid request body",
     });
   }
