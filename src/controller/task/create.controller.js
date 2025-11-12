@@ -21,9 +21,7 @@ export async function create(req, res) {
   const userId = req._private.jwt.userId;
   try {
     const taskRepository = new PrismaTaskRepository();
-    const { task } = await new CreateTaskService(
-      taskRepository,
-    ).execute({
+    const { task } = await new CreateTaskService(taskRepository).execute({
       title,
       description,
       priority,

@@ -6,9 +6,7 @@ export async function remove(req, res) {
 
   try {
     const taskRepository = new PrismaTaskRepository();
-    await new DeleteTaskService(taskRepository).execute(
-      parseInt(taskId),
-    );
+    await new DeleteTaskService(taskRepository).execute(parseInt(taskId));
 
     return res.status(204).send();
   } catch (err) {

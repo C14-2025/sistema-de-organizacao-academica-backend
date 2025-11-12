@@ -24,9 +24,7 @@ export async function update(req, res) {
 
   try {
     const taskRepository = new PrismaTaskRepository();
-    const { task } = await new UpdateTaskService(
-      taskRepository,
-    ).execute({
+    const { task } = await new UpdateTaskService(taskRepository).execute({
       taskId: parseInt(taskId),
       data: parse.data,
     });

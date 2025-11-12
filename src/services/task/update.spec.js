@@ -50,9 +50,7 @@ describe("Update Task Service", () => {
   });
 
   it("should throw error if task does not exist", async () => {
-    mockTaskRepository.update.mockRejectedValue(
-      new Error("Task not found."),
-    );
+    mockTaskRepository.update.mockRejectedValue(new Error("Task not found."));
 
     await expect(
       sut.execute({

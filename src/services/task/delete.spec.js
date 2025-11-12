@@ -28,12 +28,8 @@ describe("Delete Task Service", () => {
 
   it("should throw error if task does not exist", async () => {
     const taskId = 999;
-    mockTaskRepository.delete.mockRejectedValue(
-      new Error("Task not found."),
-    );
+    mockTaskRepository.delete.mockRejectedValue(new Error("Task not found."));
 
-    await expect(sut.execute(taskId)).rejects.toThrow(
-      "Task not found.",
-    );
+    await expect(sut.execute(taskId)).rejects.toThrow("Task not found.");
   });
 });
