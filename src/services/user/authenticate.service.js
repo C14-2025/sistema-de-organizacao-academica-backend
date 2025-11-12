@@ -20,8 +20,7 @@ export class AuthenticateService {
 
     const payload = {
       userId: user.id,
-      userEmail: user.email,
-      accountId: user.accountId,
+      email: user.email,
       userRole: user.role,
     };
 

@@ -4,7 +4,6 @@ import { CreateUserService } from "../../services/user/create.service.js";
 
 export async function create(req, res) {
   const schema = z.object({
-    name: z.string().max(255),
     email: z.email(),
     secret: z.string().max(255),
   });
@@ -12,12 +11,12 @@ export async function create(req, res) {
   const parse = schema.safeParse(req.body);
 
   if (!parse.success) {
-    const error = {
-      errors: parse.error.formErrors().fieldErrors,
+    const formattedError = parse.error.format();
+    console.error(formattedError);
+    return res.status(400).json({
+      errors: formattedError,
       message: "Invalid request body",
-    };
-    console.error(error);
-    return res.status(400).json(error);
+    });
   }
 
   const { name, email, secret } = parse.data;

@@ -14,8 +14,10 @@ export async function update(req, res) {
   const parse = schema.safeParse(req.body);
 
   if (!parse.success) {
+    const formattedError = parse.error.format();
+    console.error(formattedError);
     return res.status(400).json({
-      errors: parse.error.formErrors().fieldErrors,
+      errors: formattedError,
       message: "Invalid request body",
     });
   }

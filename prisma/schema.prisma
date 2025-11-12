@@ -9,17 +9,16 @@ datasource db {
 
 model User {
     id        Int      @id @default(autoincrement())
-    name String
     email     String   @unique
     secret    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     // Relacionamentos
-    subjects   Subject[]
-    activities Activity[]
-    exams      Exam[]
-    works      Work[]
+    subjects Subject[]
+    tasks    Task[]
+    exams    Exam[]
+    works    Work[]
 }
 
 model Subject {
@@ -64,27 +63,20 @@ model Work {
     user   User @relation(fields: [userId], references: [id])
 }
 
-model Activity {
-    id          Int       @id @default(autoincrement())
+model Task {
+    id          Int      @id @default(autoincrement())
     title       String
     description String?
-    priority    Priority  @default(OPTIONAL)
-    status      Status    @default(PENDING)
-    deadline    DateTime?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    status      Status   @default(pendente)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 
     userId Int
     user   User @relation(fields: [userId], references: [id])
 }
 
-enum Priority {
-    URGENT
-    IMPORTANT
-    OPTIONAL
-}
-
 enum Status {
-    PENDING
-    COMPLETED
+    pendente
+    emprogresso
+    completo
 }

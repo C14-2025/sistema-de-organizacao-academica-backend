@@ -1,13 +1,13 @@
-import { PrismaActivityRepository } from "../../repositories/prisma/prisma-activity-repository.js";
-import { FindByUserIdService } from "../../services/activity/find-by-user-id.service.js";
+import { PrismaTaskRepository } from "../../repositories/prisma/prisma-task-repository.js";
+import { FindByUserIdService } from "../../services/task/find-by-user-id.service.js";
 
 export async function findByUserId(req, res) {
   const userId = req._private.jwt.userId;
 
   try {
-    const activityRepository = new PrismaActivityRepository();
+    const taskRepository = new PrismaTaskRepository();
     const { activities } = await new FindByUserIdService(
-      activityRepository,
+      taskRepository,
     ).execute(userId);
 
     return res.status(200).json(activities);

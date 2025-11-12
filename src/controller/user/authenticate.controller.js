@@ -3,20 +3,20 @@ import { PrismaUserRepository } from "../../repositories/prisma/prisma-user-repo
 import { AuthenticateService } from "../../services/user/authenticate.service.js";
 
 export async function authenticate(req, res) {
-  const AuthenticateUserBodySchema = z.object({
+  const authenticateUserBodySchema = z.object({
     email: z.email(),
     secret: z.string().max(255),
   });
 
-  const parse = AuthenticateUserBodySchema.safeParse(req.body);
+  const parse = authenticateUserBodySchema.safeParse(req.body);
 
-  if (parse.error) {
-    const error = {
-      errors: parse.error.formErrors().fieldErrors,
+  if (!parse.success) {
+    const formattedError = parse.error.format();
+    console.error(formattedError);
+    return res.status(400).json({
+      errors: formattedError,
       message: "Invalid request body",
-    };
-    console.error(error);
-    return res.status(400).send(error);
+    });
   }
 
   const { email, secret } = parse.data;

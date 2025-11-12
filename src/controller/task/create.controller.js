@@ -1,32 +1,28 @@
 import { z } from "zod";
-import { PrismaActivityRepository } from "../../repositories/prisma/prisma-activity-repository.js";
-import { CreateActivityService } from "../../services/activity/create.service.js";
+import { PrismaTaskRepository } from "../../repositories/prisma/prisma-task-repository.js";
+import { CreateTaskService } from "../../services/task/create.service.js";
 
 export async function create(req, res) {
   const schema = z.object({
     title: z.string().max(255),
     description: z.string().optional(),
-    priority: z.enum(["URGENT", "IMPORTANT", "OPTIONAL"]).default("OPTIONAL"),
-    status: z.enum(["PENDING", "COMPLETED"]).default("PENDING"),
-    deadline: z.coerce.date().optional(),
+    status: z.enum(["pendente", "emprogresso", "completo"]).default("pendente"),
   });
-
   const parse = schema.safeParse(req.body);
-
   if (!parse.success) {
+    const formattedError = parse.error.format();
+    console.error(formattedError);
     return res.status(400).json({
-      errors: parse.error.formErrors().fieldErrors,
+      errors: formattedError,
       message: "Invalid request body",
     });
   }
-
   const { title, description, priority, status, deadline } = parse.data;
   const userId = req._private.jwt.userId;
-
   try {
-    const activityRepository = new PrismaActivityRepository();
-    const { activity } = await new CreateActivityService(
-      activityRepository,
+    const taskRepository = new PrismaTaskRepository();
+    const { task } = await new CreateTaskService(
+      taskRepository,
     ).execute({
       title,
       description,
@@ -35,8 +31,7 @@ export async function create(req, res) {
       deadline,
       userId,
     });
-
-    return res.status(201).json(activity);
+    return res.status(201).json(task);
   } catch (err) {
     console.error(err);
     return res.status(500).send();

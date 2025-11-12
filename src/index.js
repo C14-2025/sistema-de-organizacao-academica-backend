@@ -1,6 +1,6 @@
 import express from "express";
 import { userRoutes } from "./controller/user/route.js";
-import { activityRoutes } from "./controller/activity/route.js";
+import { taskRoutes } from "./controller/task/route.js";
 import { examRoutes } from "./controller/exam/route.js";
 import { subjectRoutes } from "./controller/subject/route.js";
 import { workRoutes } from "./controller/work/route.js";
@@ -14,7 +14,7 @@ const PORT = 8080;
 app.use(express.json());
 
 app.use("/user", userRoutes);
-app.use("/activity", activityRoutes);
+app.use("/task", taskRoutes);
 app.use("/exam", examRoutes);
 app.use("/subject", subjectRoutes);
 app.use("/work", workRoutes);

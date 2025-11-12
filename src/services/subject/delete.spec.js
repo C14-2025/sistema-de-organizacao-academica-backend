@@ -27,7 +27,7 @@ describe("Delete Subject Service", () => {
 
     await deleteService.execute(subject.id);
 
-    const { subjects } = await listService.execute(1);
+    const subjects = await listService.execute(1);
     expect(subjects.length).toBe(0);
   });
 

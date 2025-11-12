@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.post("/", verifyJwt, create);
 router.get("/", verifyJwt, findByUserId);
-router.get("/:activityId", verifyJwt, findById);
-router.put("/:activityId", verifyJwt, update);
-router.delete("/:activityId", verifyJwt, remove);
+router.get("/:taskId", verifyJwt, findById);
+router.put("/:taskId", verifyJwt, update);
+router.delete("/:taskId", verifyJwt, remove);
 
-export { router as activityRoutes };
+export { router as taskRoutes };

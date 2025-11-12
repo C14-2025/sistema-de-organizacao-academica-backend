@@ -5,6 +5,6 @@ export class FindSubjectsByUserIdService {
 
   async execute(userId) {
     const subjects = await this.subjectRepository.findByUserId(userId);
-    return { subjects };
+    return subjects;
   }
 }

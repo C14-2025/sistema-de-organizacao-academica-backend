@@ -7,15 +7,17 @@ export async function create(req, res) {
     title: z.string().max(255),
     date: z.coerce.date(),
     location: z.string().max(255),
-    expectedNote: z.number().optional(),
-    subjectId: z.number().int(),
+    expectedNote: z.string().transform((note) => Number(note)),
+    subjectId: z.string().transform((id) => Number(id)),
   });
 
   const parse = schema.safeParse(req.body);
 
   if (!parse.success) {
+    const formattedError = parse.error.format();
+    console.error(formattedError);
     return res.status(400).json({
-      errors: parse.error.formErrors().fieldErrors,
+      errors: formattedError,
       message: "Invalid request body",
     });
   }
