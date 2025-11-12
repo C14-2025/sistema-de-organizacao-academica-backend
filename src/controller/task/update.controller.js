@@ -1,14 +1,12 @@
 import { z } from "zod";
-import { PrismaWorkRepository } from "../../repositories/prisma/prisma-work-repository.js";
-import { UpdateWorkService } from "../../services/work/update.service.js";
+import { PrismaTaskRepository } from "../../repositories/prisma/prisma-task-repository.js";
+import { UpdateTaskService } from "../../services/task/update.service.js";
 
 export async function update(req, res) {
   const schema = z.object({
     title: z.string().max(255).optional(),
     description: z.string().optional(),
-    deadline: z.coerce.date().optional(),
-    requirements: z.string().optional(),
-    subjectId: z.number().int().optional(),
+    status: z.enum(["pendente", "emprogresso", "completo"]).default("pendente"),
   });
 
   const parse = schema.safeParse(req.body);
@@ -22,16 +20,18 @@ export async function update(req, res) {
     });
   }
 
-  const { workId } = req.params;
+  const { taskId } = req.params;
 
   try {
-    const workRepository = new PrismaWorkRepository();
-    const { work } = await new UpdateWorkService(workRepository).execute({
-      workId: parseInt(workId),
+    const taskRepository = new PrismaTaskRepository();
+    const { task } = await new UpdateTaskService(
+      taskRepository,
+    ).execute({
+      taskId: parseInt(taskId),
       data: parse.data,
     });
 
-    return res.status(200).json(work);
+    return res.status(200).json(task);
   } catch (err) {
     console.error(err);
     return res.status(500).send();
