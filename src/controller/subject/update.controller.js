@@ -2,14 +2,16 @@ import { z } from "zod";
 import { PrismaSubjectRepository } from "../../repositories/prisma/prisma-subject-repository.js";
 import { UpdateSubjectService } from "../../services/subject/update.service.js";
 
-const schema = z.object({
-  name: z.string().max(255).optional(),
-  code: z.string().max(100).optional(),
-  professor: z.string().max(255).optional(),
-  schedule: z.string().max(255).optional(),
-}).refine(obj => Object.keys(obj).length > 0, {
-  message: "Body must have at least one field",
-});
+const schema = z
+  .object({
+    name: z.string().max(255).optional(),
+    code: z.string().max(100).optional(),
+    professor: z.string().max(255).optional(),
+    schedule: z.string().max(255).optional(),
+  })
+  .refine((obj) => Object.keys(obj).length > 0, {
+    message: "Body must have at least one field",
+  });
 
 export async function update(req, res) {
   const parsed = schema.safeParse(req.body);

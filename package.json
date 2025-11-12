@@ -12,6 +12,7 @@
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest --config vitest.config.cjs run --coverage --coverage.reporter=cobertura --coverage.reporter=html --coverage.reportsDirectory=coverage --reporter=default --reporter=junit --outputFile=reports/junit/junit.xml",
     "lint": "eslint .",
+    "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "keywords": [],

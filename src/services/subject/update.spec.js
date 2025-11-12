@@ -78,7 +78,7 @@ describe("Update Subject Service (with mocks)", () => {
     repo.findById.mockResolvedValue({ subject: null });
 
     await expect(
-      sut.execute({ subjectId: 999, data: { name: "Not Found" } })
+      sut.execute({ subjectId: 999, data: { name: "Not Found" } }),
     ).rejects.toThrow("SUBJECT_NOT_FOUND");
 
     expect(repo.update).not.toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe("Update Subject Service (with mocks)", () => {
     repo.findByCode.mockResolvedValue({ subject: conflict });
 
     await expect(
-      sut.execute({ subjectId: existing.id, data: { code: "  os1 " } })
+      sut.execute({ subjectId: existing.id, data: { code: "  os1 " } }),
     ).rejects.toThrow("SUBJECT_CODE_ALREADY_EXISTS");
 
     expect(repo.update).not.toHaveBeenCalled();
