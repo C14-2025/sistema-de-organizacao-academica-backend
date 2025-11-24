@@ -31,8 +31,8 @@ pipeline {
       when { expression { fileExists('prisma/schema.prisma') } }
       steps {
         script {
-          isUnix() ? sh('npx prisma -v && npx prisma generate')
-                   : bat('npx prisma -v && npx prisma generate')
+          isUnix() ? sh('node_modules/.bin/prisma -v && node_modules/.bin/prisma generate')
+                   : bat('node_modules\\.bin\\prisma -v && node_modules\\.bin\\prisma generate')
         }
       }
     }
